@@ -14,7 +14,7 @@
 
 ## 발생 문제점
 
-### showDetail을 아래와 같이 온도와 습도를 추가적으로 보여주도록 수정시 사진처럼 undefined로 표시되는 문제점이 있었음
+### showDetail을 아래와 같이 온도와 습도를 추가적으로 보여주도록 수정시 사진처럼 undefined로 표시되는 문제
 
 ```js
 const showDetail = (cityName, status, temp, humidity) => {
@@ -48,7 +48,7 @@ const showDetail = (city) => {
 }
 ```
 
-### 도시 검색시 하단 바에 같이 표시되지 않던 문제점이 있었음
+### 도시 검색시 하단 바에 같이 표시되지 않던 문제점
 
 발생 문제 원인: selectedCity만을 이용해서 받음으로서 클릭 했을 경우만 하단바의 문구 변경
 문제 해결 방법: searchedCity 또한 포함하여 검색 결과에 따라 변경되도록 설정

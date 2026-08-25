@@ -60,6 +60,7 @@ const showDetail = (city) => {
 
       <div class="status-bar" aria-live="polite">
         <p v-if="selectedCity">{{ selectedCity }}이 선택되었습니다.</p>
+        <p v-else-if="searchCity">{{ searchCity }}를 검색중입니다.</p>
         <p v-else>카드를 클릭하거나 검색해 보세요.</p>
       </div>
     </section>

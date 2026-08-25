@@ -67,7 +67,7 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
   <main class="page-wrap">
     <section class="weather-app">
       <header class="app-header">
-        <h1>🌤️ 과제 1: 날씨 (Mockup)</h1>
+        <h1>🌤️ 과제 1, 2: 날씨 (컴포지션)</h1>
       </header>
 
       <section class="panel search-panel">

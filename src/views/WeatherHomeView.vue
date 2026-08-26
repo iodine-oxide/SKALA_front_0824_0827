@@ -1,19 +1,15 @@
 <script setup>
 import { computed, ref, watch, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
 
-import BaseDashboardCard from './BaseDashboardCard.vue'
-import SearchBar from './SearchBar.vue'
-import WeatherCard from './WeatherCard.vue'
-import WeatherStatusBar from './WeatherStatusBar.vue'
+import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
+import SearchBar from '@/components/exercise/SearchBar.vue'
+import WeatherCard from '@/components/exercise/WeatherCard.vue'
+import WeatherStatusBar from '@/components/exercise/WeatherStatusBar.vue'
+import { weatherData } from '@/data/weatherData'
 
-const weatherList = ref([
-  { id: 'city_01', name: '서울', temp: 28, status: '맑음', humidity: 60 },
-  { id: 'city_02', name: '수원', temp: 24, status: '비', humidity: 90 },
-  { id: 'city_03', name: '부산', temp: 26, status: '구름', humidity: 70 },
-  { id: 'city_04', name: '제주', temp: 22, status: '바람', humidity: 60 },
-  { id: 'city_05', name: '판교', temp: 27, status: '구름', humidity: 80 },
-  { id: 'city_06', name: '수서', temp: 26, status: '맑음', humidity: 40 },
-])
+const router = useRouter()
+const weatherList = ref([...weatherData])
 
 const searchCity = ref('')
 const selectedCity = ref(null)
@@ -55,7 +51,7 @@ const selectCity = (city) => {
 }
 
 const showDetail = (city) => {
-  window.alert(`${city.name}의 현재 날씨는 ${city.status}이고 온도는 ${city.temp}도, 습도는 ${city.humidity}%입니다.`)
+  router.push(`/weather/${city.id}`)
 }
 
 watch(selectedCity, (newCity, oldCity) => {
@@ -76,17 +72,11 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
 <template>
   <main class="page-wrap">
     <section class="weather-app">
-      <header class="app-header">
-        <h1>🌤️ 과제 1, 2, 3: 날씨 (컴포넌트)</h1>
-      </header>
-
       <BaseDashboardCard title="🔍 도시 검색">
-        <!--검색 기능을 배경 블럭에 주입-->
         <SearchBar :query="searchCity" :temperature-filter="temperatureFilter" :result-count="visibleCityCount" @update-query="handleSearchInput" @update-filter="updateTemperatureFilter" />
       </BaseDashboardCard>
 
       <BaseDashboardCard title="🏙️ 지역별 날씨 현황">
-        <!--검색, 필터링된 지역별 날씨 카드를 배경 블럭에 주입 -->
         <template v-if="filteredWeatherList.length > 0">
           <WeatherCard v-for="city in filteredWeatherList" :key="city.id" :city="city" @select-card="selectCity" @click-detail="showDetail" />
         </template>
@@ -105,29 +95,18 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
 
 <style scoped>
 .page-wrap {
-  min-height: 100vh;
+  min-height: calc(100vh - 136px);
   display: grid;
-  place-items: center;
-  padding: 40px 20px;
+  place-items: start center;
+  padding: 24px 20px 40px;
 }
 
 .weather-app {
   width: min(720px, 100%);
-  padding: 44px 48px 36px;
+  padding: 12px 48px 36px;
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 10px 30px rgba(38, 57, 77, 0.08);
-}
-
-.app-header {
-  padding-bottom: 20px;
-  border-bottom: 1px solid #dfe5ea;
-}
-
-.app-header h1 {
-  margin: 0;
-  color: #26394d;
-  font-size: 26px;
 }
 
 .empty-result {
@@ -151,11 +130,7 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
   }
 
   .weather-app {
-    padding: 28px 18px 22px;
-  }
-
-  .app-header h1 {
-    font-size: 21px;
+    padding: 6px 18px 22px;
   }
 }
 </style>

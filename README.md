@@ -10,7 +10,9 @@
 - 습도를 데이터(weatherList)에 추가
 - v-if, v-else-if로 더움, 선선함 이외에도 '온도가 25도 이상, 습도 60이상' 조건에 대해 "🫠 습하고 더움(25도 이상 습도 60 이상)" 출력 설정
 - 습하고 더움에 대해 style.css내에 .temperature-label.humidhot를 추가
-- 2번째 hands on 에서 도시 필터를 반응형 변수로 추가 온도와 습도 조건에 따라 도시를 필터일
+- 2번째 hands on 에서 도시 필터를 반응형 변수로 추가 온도와 습도 조건에 따라 도시를 필터링
+- 필터링에 대해서도 이전 필터와 신규 적용 필터가 로그에 포함되도록 조치
+- 컴포넌트 분리 과정에서 하단 바 또한 추가적으로 분리 selectedCity, searchedCity, resultCount를 WeatherParent에서 상속 받아 사용
 
 ## 발생 문제점
 
@@ -67,3 +69,4 @@ const showDetail = (city) => {
   <p v-else>카드를 클릭하거나 검색해 보세요.</p>
 </div>
 ```
+

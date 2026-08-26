@@ -61,13 +61,13 @@ const showDetail = (city) => {
 문제 해결 방법: searchedCity 또한 포함하여 검색 결과에 따라 변경되도록 설정
 
 ```html
-// 수정 전
+<!--수정 전-->
 <div class="status-bar" aria-live="polite">
   <p v-if="selectedCity">{{ selectedCity }}이 선택되었습니다.</p>
   <p v-else>카드를 클릭하거나 검색해 보세요.</p>
 </div>
 
-// 수정 후
+<!--수정 후-->
 <div class="status-bar" aria-live="polite">
   <p v-if="selectedCity">{{ selectedCity }}이 선택되었습니다.</p>
   <p v-else-if="searchCity">{{ searchCity }}를 검색중입니다.</p>

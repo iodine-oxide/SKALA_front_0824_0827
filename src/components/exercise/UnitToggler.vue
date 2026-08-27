@@ -1,13 +1,23 @@
 <script setup>
+import { computed } from 'vue'
+
 import { useConfigStore } from '@/stores/configStore'
 
 const configStore = useConfigStore()
+
+const useFahrenheit = computed({
+  get: () => configStore.unit === 'fahrenheit',
+  set: (value) => {
+    const nextUnit = value ? 'fahrenheit' : 'celsius'
+    if (configStore.unit !== nextUnit) configStore.toggleUnit()
+  },
+})
 </script>
 
 <template>
   <div class="unit-toggler">
-    <span>날씨 단위: {{ configStore.unitLabel }}({{ configStore.unitSymbol }})</span>
-    <button type="button" @click="configStore.toggleUnit">단위 변경</button>
+    <span>날씨 단위: {{ configStore.unitLabel }}</span>
+    <ElSwitch v-model="useFahrenheit" inline-prompt active-text="°F" inactive-text="°C" aria-label="섭씨와 화씨 단위 전환" />
   </div>
 </template>
 
@@ -25,21 +35,6 @@ const configStore = useConfigStore()
   color: #687b8c;
   font-size: 12px;
   font-weight: 700;
-}
-
-.unit-toggler button {
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 6px;
-  color: #fff;
-  background: #475d70;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.unit-toggler button:hover {
-  background: #30475a;
 }
 
 @media (max-width: 680px) {

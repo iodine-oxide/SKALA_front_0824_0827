@@ -1,44 +1,37 @@
 <script setup>
-// import { computed } from 'vue'
+import { Back } from '@element-plus/icons-vue'
 
-// import { weatherData } from '@/data/weatherData'
-
-// const stats = computed(() => ({
-//   total: weatherData.length,
-//   hot: weatherData.filter((city) => city.temp >= 25).length,
-//   cool: weatherData.filter((city) => city.temp < 25).length,
-//   humidHot: weatherData.filter((city) => city.temp >= 25 && city.humidity >= 60).length, // 각 환경애 있는 도시수와 총 도시수를 통계로 제공
-// }))
-// 기존 데이터 임포트 방식
-
-import { useWeatherStore } from '@/stores/weatherStore' // Store 사용으로 변경
+import { useWeatherStore } from '@/stores/weatherStore'
 
 const weatherStore = useWeatherStore()
+
+const statisticItems = [
+  { key: 'total', title: '전체 도시' },
+  { key: 'hot', title: '더운 도시' },
+  { key: 'cool', title: '선선한 도시' },
+  { key: 'humidHot', title: '습하고 더운 도시' },
+]
 </script>
 
 <template>
   <main class="view-page">
-    <section class="stats-panel">
-      <h1>도시 날씨 통계</h1>
+    <ElCard class="stats-panel" shadow="never">
+      <template #header>
+        <h1>도시 날씨 통계</h1>
+      </template>
 
-      <div class="stats-grid">
-        <article>
-          <span>전체 도시</span><strong>{{ weatherStore.stats.total }}</strong>
-        </article>
-        <article>
-          <span>더운 도시</span><strong>{{ weatherStore.stats.hot }}</strong>
-        </article>
-        <article>
-          <span>선선한 도시</span><strong>{{ weatherStore.stats.cool }}</strong>
-        </article>
-        <article>
-          <span>습하고 더운 도시</span><strong>{{ weatherStore.stats.humidHot }}</strong>
-        </article>
-      </div>
+      <ElRow :gutter="14" class="stats-grid">
+        <ElCol v-for="item in statisticItems" :key="item.key" :xs="24" :sm="12">
+          <div class="statistic-card">
+            <ElStatistic :title="item.title" :value="weatherStore.stats[item.key]" />
+          </div>
+        </ElCol>
+      </ElRow>
 
-      <RouterLink to="/">← 메인 대시보드로 돌아가기</RouterLink>
-      <!--메인페이지 복귀 라우터 링크-->
-    </section>
+      <RouterLink to="/" custom v-slot="{ navigate }">
+        <ElButton type="primary" plain :icon="Back" @click="navigate">메인 대시보드로 돌아가기</ElButton>
+      </RouterLink>
+    </ElCard>
   </main>
 </template>
 
@@ -51,62 +44,58 @@ const weatherStore = useWeatherStore()
 
 .stats-panel {
   width: min(720px, 100%);
-  padding: 38px;
   border-radius: 12px;
-  background: #fff;
   box-shadow: 0 10px 30px rgba(38, 57, 77, 0.08);
 }
 
+.stats-panel :deep(.el-card__header) {
+  padding: 28px 32px 20px;
+}
+
+.stats-panel :deep(.el-card__body) {
+  padding: 26px 32px 32px;
+}
+
 h1 {
-  margin: 0 0 24px;
+  margin: 0;
   color: #26394d;
   font-size: 28px;
 }
 
 .stats-grid {
-  margin-bottom: 26px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  margin-bottom: 12px;
 }
 
-.stats-grid article {
-  padding: 22px;
-  border: 1px solid #dfe5ea;
+.statistic-card {
+  min-height: 112px;
+  margin-bottom: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 9px;
-  background: #f7f9fa;
+  background: var(--el-fill-color-light);
 }
 
-.stats-grid span,
-.stats-grid strong {
-  display: block;
-}
-
-.stats-grid span {
+.statistic-card :deep(.el-statistic__head) {
   margin-bottom: 8px;
   color: #687b8c;
   font-size: 13px;
 }
 
-.stats-grid strong {
-  color: #2563eb;
+.statistic-card :deep(.el-statistic__number) {
+  color: var(--el-color-primary);
   font-size: 30px;
-}
-
-a {
-  color: #2563eb;
-  font-size: 14px;
   font-weight: 700;
-  text-decoration: none;
 }
 
 @media (max-width: 500px) {
-  .stats-panel {
-    padding: 26px 20px;
+  .stats-panel :deep(.el-card__header) {
+    padding: 22px 20px 16px;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .stats-panel :deep(.el-card__body) {
+    padding: 20px;
   }
 }
 </style>

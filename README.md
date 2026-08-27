@@ -1,5 +1,7 @@
 # 0824 ~ 0827 실습
 
+
+
 ## 추가된 부분들
 
 ### 0824, 0825
@@ -13,6 +15,7 @@
 - 컴포넌트 분리 과정에서 하단 바 또한 추가적으로 분리 selectedCity, searchedCity, resultCount를 WeatherParent에서 주입 받아 사용
 - 라우터를 적용 index.js를 통하여 기본 주소(localhost:----/)에는 home으로 라우팅, 이후 네비게이션, 상세보기 클릭에 따라 각 뷰로 라우팅
 - 네비게이션 바와 제목이 합쳐진 블럭을 하나의 컴포넌트로 분리하여 App.vue에서 사용 라우팅 페이지 위에서 고정됨
+- HTML, CSS AI 사용하여 제작,JS 부분 힌트 받아 직접 작성
 
 ### 0827(Store hands on)
 - Pinia Store를 통해 화씨 - 섭씨 변환 기능을 추가
@@ -27,7 +30,17 @@
 - ```전체 날씨 새로고침```버튼 클릭시 OpenWeather API를 통해 실제 조회 날씨로 업데이트
 - API 상의 체감온도를 표시 정보에 추가
 
+### 0827 (UI 템플릿 적용)
+ - ElButton, ElInput, ElTag: 검색창, 날씨 카드, 새로고침 버튼
+ - ElCard, ElAlert, ElEmpty: 대시보드 패널, 결과 메시지, 빈 결과
+ - ElDescriptions, ElStatistic: 상세 날씨와 통계 화면
+ - ElSwitch, ElDialog: 온도 단위 전환과 지역 선택 팝업
+ - 템플릿 적용 과정에서 AI 사용하여 적용
+
+
+
 ## 발생 에러 및 해결 과정
+
 
 ### showDetail을 온도와 습도를 추가적으로 보여주도록 수정시 사진처럼 undefined로 표시되는 문제(0825)
 
@@ -63,6 +76,7 @@ const showDetail = (city) => {
 }
 ```
 
+
 ### 도시 검색시 하단 바에 같이 표시되지 않던 문제점(0825)
 
 발생 문제 원인: selectedCity만을 이용해서 받음으로서 클릭 했을 경우만 하단바의 문구 변경
@@ -82,6 +96,7 @@ const showDetail = (city) => {
   <p v-else>카드를 클릭하거나 검색해 보세요.</p>
 </div>
 ```
+
 
 ### WeatherStore 적용 이후 데이터 출력 오류(0827)
 

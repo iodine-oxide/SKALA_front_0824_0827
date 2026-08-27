@@ -1,15 +1,16 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { Back } from '@element-plus/icons-vue'
 
 // import { weatherData } from '@/data/weatherData' 기존 데이터 임포트 방식
 
-import { useWeatherStore } from '@/stores/weatherStore' //기존 데이터 임포트에서 Store로 변경
-const weatherStore = useWeatherStore()
 import { useConfigStore } from '@/stores/configStore'
+import { useWeatherStore } from '@/stores/weatherStore' //기존 데이터 임포트에서 Store로 변경
 
 const route = useRoute()
 const configStore = useConfigStore()
+const weatherStore = useWeatherStore()
 const city = computed(() => weatherStore.findById(route.params.cityId) ?? null)
 const hasWeather = computed(() => Number.isFinite(city.value?.temp) && Number.isFinite(city.value?.humidity))
 
@@ -26,39 +27,42 @@ const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(city.
 
 <template>
   <main class="view-page">
-    <section class="detail-panel">
-      <template v-if="city">
-        <h1>{{ city.name }} 상세 날씨</h1>
-        <p v-if="city.fullName" class="location-name">{{ city.fullName }}</p>
-        <p class="status">현재 상태: {{ city.status }}</p>
-
-        <div v-if="hasWeather" class="detail-grid">
-          <article>
-            <span>현재 기온</span>
-            <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
-          </article>
-          <article>
-            <span>현재 습도</span>
-            <strong>{{ city.humidity }}%</strong>
-          </article>
-          <article>
-            <span>현재 체감온도</span>
-            <strong v-if="displayFeelsLikeTemp !== null">{{ displayFeelsLikeTemp }}{{ configStore.unitSymbol }}</strong>
-            <strong v-else class="unavailable">미조회</strong>
-          </article>
+    <ElCard class="detail-panel" shadow="never">
+      <template #header>
+        <div v-if="city" class="detail-heading">
+          <div>
+            <h1>{{ city.name }} 상세 날씨</h1>
+            <p v-if="city.fullName" class="location-name">{{ city.fullName }}</p>
+          </div>
+          <ElTag type="info" effect="plain">{{ city.status }}</ElTag>
         </div>
-
-        <p class="weather-message">{{ temperatureMessage }}</p>
-        <p v-if="city.weatherError" class="api-error">{{ city.weatherError }}</p>
+        <h1 v-else>도시 정보</h1>
       </template>
 
-      <template v-else>
-        <h1>도시 정보를 찾을 수 없습니다.</h1>
-        <p class="missing-message">요청한 도시 코드가 날씨 데이터에 없습니다.</p>
+      <template v-if="city">
+        <ElDescriptions v-if="hasWeather" :column="2" border>
+          <ElDescriptionsItem label="현재 기온">
+            <strong class="weather-value">{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
+          </ElDescriptionsItem>
+          <ElDescriptionsItem label="현재 습도">
+            <strong class="weather-value">{{ city.humidity }}%</strong>
+          </ElDescriptionsItem>
+          <ElDescriptionsItem label="현재 체감 온도" :span="2">
+            <strong v-if="displayFeelsLikeTemp !== null" class="weather-value">{{ displayFeelsLikeTemp }}{{ configStore.unitSymbol }}</strong>
+            <ElTag v-else type="info" effect="plain">미조회</ElTag>
+          </ElDescriptionsItem>
+        </ElDescriptions>
+
+        <ElAlert class="weather-message" :title="temperatureMessage" type="info" :closable="false" show-icon />
+        <ElAlert v-if="city.weatherError" class="api-error" :title="city.weatherError" type="error" :closable="false" show-icon />
       </template>
 
-      <RouterLink class="back-link" to="/">← 메인 대시보드로 돌아가기</RouterLink>
-    </section>
+      <ElEmpty v-else description="요청한 도시 코드가 날씨 데이터에 없습니다." :image-size="120" />
+
+      <RouterLink to="/" custom v-slot="{ navigate }">
+        <ElButton type="primary" plain :icon="Back" @click="navigate">메인 대시보드로 돌아가기</ElButton>
+      </RouterLink>
+    </ElCard>
   </main>
 </template>
 
@@ -71,94 +75,61 @@ const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(city.
 
 .detail-panel {
   width: min(620px, 100%);
-  padding: 38px;
   border-radius: 12px;
-  background: #fff;
   box-shadow: 0 10px 30px rgba(38, 57, 77, 0.08);
 }
 
-h1 {
+.detail-panel :deep(.el-card__header) {
+  padding: 28px 32px 20px;
+}
+
+.detail-panel :deep(.el-card__body) {
+  padding: 26px 32px 32px;
+}
+
+.detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.detail-panel h1 {
   margin: 0;
   color: #26394d;
   font-size: 28px;
 }
 
-.status,
-.location-name,
-.missing-message {
-  margin: 10px 0 24px;
-  color: #687b8c;
-}
-
 .location-name {
-  margin-bottom: -4px;
-  font-size: 13px;
-}
-
-.detail-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-.detail-grid article {
-  padding: 22px;
-  border: 1px solid #dfe5ea;
-  border-radius: 9px;
-  background: #f7f9fa;
-}
-
-.detail-grid span,
-.detail-grid strong {
-  display: block;
-}
-
-.detail-grid span {
-  margin-bottom: 8px;
+  margin: 8px 0 0;
   color: #687b8c;
   font-size: 13px;
 }
 
-.detail-grid strong {
+.weather-value {
   color: #26394d;
-  font-size: 28px;
-}
-
-.detail-grid strong.unavailable {
-  color: #7b8a98;
   font-size: 20px;
 }
 
 .weather-message {
-  margin: 18px 0 26px;
-  padding: 14px;
-  border-radius: 7px;
-  color: #475d70;
-  background: #eef6ff;
-  font-weight: 700;
+  margin: 18px 0 14px;
 }
 
 .api-error {
-  margin: -14px 0 24px;
-  color: #c43d42;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.back-link {
-  color: #2563eb;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
+  margin-bottom: 14px;
 }
 
 @media (max-width: 500px) {
-  .detail-panel {
-    padding: 26px 20px;
+  .detail-panel :deep(.el-card__header) {
+    padding: 22px 20px 16px;
   }
 
-  .detail-grid {
-    grid-template-columns: 1fr;
+  .detail-panel :deep(.el-card__body) {
+    padding: 20px;
+  }
+
+  .detail-heading {
+    flex-direction: column;
   }
 }
 </style>

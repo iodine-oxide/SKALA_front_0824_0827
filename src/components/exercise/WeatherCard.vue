@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { View } from '@element-plus/icons-vue'
 
 import { useConfigStore } from '@/stores/configStore'
 
@@ -19,9 +20,12 @@ const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(props
 </script>
 
 <template>
-  <article class="weather-card" tabindex="0" @click="emit('select-card', city)" @keydown.enter.self="emit('select-card', city)" @keydown.space.self.prevent="emit('select-card', city)">
+  <ElCard class="weather-card" shadow="hover" tabindex="0" @click="emit('select-card', city)" @keydown.enter.self="emit('select-card', city)" @keydown.space.self.prevent="emit('select-card', city)">
     <div class="weather-info">
-      <h3>{{ city.name }} ({{ city.status }})</h3>
+      <h3>
+        {{ city.name }}
+        <ElTag type="info" effect="plain" size="small">{{ city.status }}</ElTag>
+      </h3>
       <small v-if="city.fullName && city.fullName !== city.name" class="location-name">{{ city.fullName }}</small>
 
       <template v-if="hasWeather">
@@ -33,46 +37,47 @@ const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(props
         </p>
         <p>현재 습도: {{ city.humidity }}%</p>
 
-        <span v-if="city.temp >= 25 && city.humidity >= 60" class="temperature-label humidhot">🫠 습하고 더움(25도 이상 습도 60 이상)</span>
-        <span v-else-if="city.temp >= 25" class="temperature-label hot">🔥 더움 (25도 이상)</span>
-        <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+        <ElTag v-if="city.temp >= 25 && city.humidity >= 60" type="danger" effect="dark">🫠 습하고 더움</ElTag>
+        <ElTag v-else-if="city.temp >= 25" type="warning" effect="dark">🔥 더움</ElTag>
+        <ElTag v-else type="primary" effect="dark">❄️ 선선함</ElTag>
       </template>
 
       <p v-else class="not-loaded">날씨 정보가 없습니다. 전체 날씨 새로고침을 눌러 주세요.</p>
       <p v-if="city.weatherError" class="weather-error">{{ city.weatherError }}</p>
     </div>
 
-    <button type="button" class="detail-button" @click.stop="emit('click-detail', city)">상세보기</button>
-  </article>
+    <ElButton type="primary" plain :icon="View" class="detail-button" @click.stop="emit('click-detail', city)">상세보기</ElButton>
+  </ElCard>
 </template>
 
 <style scoped>
 .weather-card {
-  min-height: 116px;
   margin-top: 12px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.weather-card :deep(.el-card__body) {
+  min-height: 116px;
   padding: 18px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  border: 1px solid #d7dde2;
-  border-radius: 7px;
-  outline: none;
-  background: #fff;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
 }
 
-.weather-card:hover,
 .weather-card:focus-visible {
+  outline: none;
   border-color: #8cb9dd;
-  box-shadow: 0 4px 12px rgba(38, 57, 77, 0.08);
+  box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.16);
 }
 
 .weather-info h3 {
   margin: 0 0 7px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
   color: #425466;
   font-size: 15px;
 }
@@ -105,44 +110,12 @@ const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(props
   line-height: 1.45;
 }
 
-.temperature-label {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.temperature-label.hot {
-  background: #ff6266;
-}
-
-.temperature-label.humidhot {
-  background: #ff5100;
-}
-
-.temperature-label.cool {
-  background: #64adf5;
-}
-
 .detail-button {
-  padding: 9px 13px;
-  border: 1px solid #8b9298;
-  border-radius: 2px;
-  color: #425466;
-  background: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.detail-button:hover {
-  background: #f1f4f6;
+  flex: 0 0 auto;
 }
 
 @media (max-width: 600px) {
-  .weather-card {
+  .weather-card :deep(.el-card__body) {
     min-height: auto;
     padding: 15px;
   }

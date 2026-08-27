@@ -9,32 +9,45 @@ defineProps({
 </script>
 
 <template>
-  <section class="panel">
-    <h2>{{ title }}</h2>
+  <ElCard class="panel" shadow="never">
+    <template #header>
+      <h2>{{ title }}</h2>
+    </template>
     <slot />
     <!-- slot으로 주입된 인자들 출력 -->
-  </section>
+  </ElCard>
 </template>
 
 <style scoped>
 .panel {
   margin-top: 24px;
-  padding: 20px;
-  border: 1px solid #dfe5ea;
   border-radius: 9px;
   background: #f7f9fa;
 }
 
 .panel h2 {
-  margin: 0 0 12px;
+  margin: 0;
   color: #536677;
   font-size: 17px;
   font-weight: 700;
 }
 
+.panel :deep(.el-card__header) {
+  padding: 16px 20px 12px;
+  border-bottom: 0;
+}
+
+.panel :deep(.el-card__body) {
+  padding: 0 20px 20px;
+}
+
 @media (max-width: 600px) {
-  .panel {
-    padding: 15px;
+  .panel :deep(.el-card__header) {
+    padding: 15px 15px 10px;
+  }
+
+  .panel :deep(.el-card__body) {
+    padding: 0 15px 15px;
   }
 }
 </style>

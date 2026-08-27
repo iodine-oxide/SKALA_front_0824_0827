@@ -30,7 +30,7 @@ const filteredWeatherList = computed(() => {
   }
 
   if (temperatureFilter.value === 'hot') {
-    result = result.filter((city) => Number.isFinite(city.temp) && city.temp >= 25)
+    result = result.filter((city) => Number.isFinite(city.temp) && city.temp >= 25 && city.humidity < 60)
   } else if (temperatureFilter.value === 'cool') {
     result = result.filter((city) => Number.isFinite(city.temp) && city.temp < 25)
   } else if (temperatureFilter.value === 'humidHot') {
@@ -105,11 +105,7 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
           <WeatherCard v-for="city in filteredWeatherList" :key="city.id" :city="city" @select-card="selectCity" @click-detail="showDetail" />
         </template>
 
-        <div v-else class="empty-result">
-          <p>
-            <strong>'{{ searchCity }}'</strong>와 일치하는 도시가 없습니다.
-          </p>
-        </div>
+        <ElEmpty v-else :description="searchCity ? `'${searchCity}'와 일치하는 도시가 없습니다.` : '조건에 맞는 도시가 없습니다.'" :image-size="100" />
       </BaseDashboardCard>
 
       <AddCityForm
@@ -141,21 +137,6 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
   border-radius: 12px;
   background: #fff;
   box-shadow: 0 10px 30px rgba(38, 57, 77, 0.08);
-}
-
-.empty-result {
-  margin-top: 12px;
-  padding: 28px 18px;
-  border: 1px dashed #c6d0d8;
-  border-radius: 7px;
-  color: #687b8c;
-  background: #fff;
-  text-align: center;
-  font-size: 14px;
-}
-
-.empty-result p {
-  margin: 0;
 }
 
 @media (max-width: 600px) {

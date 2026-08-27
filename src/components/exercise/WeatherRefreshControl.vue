@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { Refresh } from '@element-plus/icons-vue'
 
 const props = defineProps({
   isRefreshing: {
@@ -41,14 +42,13 @@ const formattedLastUpdated = computed(() => {
     <div>
       <strong>OpenWeather 현재 날씨</strong>
       <p>{{ formattedLastUpdated }}</p>
-      <p v-if="message" class="message" role="status">{{ message }}</p>
-      <p v-if="error" class="error" role="alert">{{ error }}</p>
     </div>
 
-    <button type="button" :disabled="isRefreshing" @click="$emit('refresh')">
-      {{ isRefreshing ? '갱신 중...' : '전체 날씨 새로고침' }}
-    </button>
+    <ElButton type="primary" :icon="Refresh" :loading="isRefreshing" @click="$emit('refresh')">전체 날씨 새로고침</ElButton>
   </div>
+
+  <ElAlert v-if="message" class="refresh-alert" :title="message" type="success" :closable="false" show-icon />
+  <ElAlert v-if="error" class="refresh-alert" :title="error" type="error" :closable="false" show-icon />
 </template>
 
 <style scoped>
@@ -76,30 +76,8 @@ p {
   line-height: 1.45;
 }
 
-.message {
-  color: #288a4d;
-}
-
-.error {
-  color: #c43d42;
-}
-
-button {
-  min-height: 38px;
-  padding: 0 14px;
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 5px;
-  color: #fff;
-  background: #3b82f6;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: wait;
-  opacity: 0.6;
+.refresh-alert {
+  margin-bottom: 10px;
 }
 
 @media (max-width: 600px) {
@@ -107,7 +85,7 @@ button:disabled {
     flex-direction: column;
   }
 
-  button {
+  .refresh-control :deep(.el-button) {
     width: 100%;
   }
 }

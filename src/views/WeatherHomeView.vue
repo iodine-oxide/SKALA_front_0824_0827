@@ -6,10 +6,12 @@ import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
 import WeatherStatusBar from '@/components/exercise/WeatherStatusBar.vue'
-import { weatherData } from '@/data/weatherData'
+import { useWeatherStore } from '@/stores/weatherStore'
+// import { weatherData } from '@/data/weatherData' 기존 데이터 임포트 방식
 
 const router = useRouter()
-const weatherList = ref([...weatherData])
+const weatherStore = useWeatherStore()
+// const weatherList = ref([...weatherData]) 기존 데이터 임포트 방식
 
 const searchCity = ref('')
 const selectedCity = ref(null)
@@ -17,7 +19,7 @@ const temperatureFilter = ref('all')
 
 const filteredWeatherList = computed(() => {
   const keyword = searchCity.value.trim()
-  let result = weatherList.value
+  let result = weatherStore.wheatherList
 
   if (keyword) {
     result = result.filter((city) => city.name.includes(keyword))

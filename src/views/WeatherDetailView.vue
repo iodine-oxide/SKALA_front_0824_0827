@@ -2,7 +2,10 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { findWeatherById } from '@/data/weatherData'
+// import { weatherData } from '@/data/weatherData' 기존 데이터 임포트 방식
+
+import { useWeatherStore } from '@/stores/weatherStore' //기존 데이터 임포트에서 Store로 변경
+const weatherStore = useWeatherStore()
 import { useConfigStore } from '@/stores/configStore'
 
 const route = useRoute()
@@ -10,7 +13,7 @@ const city = ref(null)
 const configStore = useConfigStore()
 
 const loadCity = () => {
-  city.value = findWeatherById(route.params.cityId) ?? null
+  city.value = weatherStore.findById(route.params.cityId) ?? null
 }
 
 const temperatureMessage = computed(() => {

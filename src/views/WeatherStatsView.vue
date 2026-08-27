@@ -1,14 +1,20 @@
 <script setup>
-import { computed } from 'vue'
+// import { computed } from 'vue'
 
-import { weatherData } from '@/data/weatherData'
+// import { weatherData } from '@/data/weatherData'
 
-const stats = computed(() => ({
-  total: weatherData.length,
-  hot: weatherData.filter((city) => city.temp >= 25).length,
-  cool: weatherData.filter((city) => city.temp < 25).length,
-  humidHot: weatherData.filter((city) => city.temp >= 25 && city.humidity >= 60).length, // 각 환경애 있는 도시수와 총 도시수를 통계로 제공
-}))
+// const stats = computed(() => ({
+//   total: weatherData.length,
+//   hot: weatherData.filter((city) => city.temp >= 25).length,
+//   cool: weatherData.filter((city) => city.temp < 25).length,
+//   humidHot: weatherData.filter((city) => city.temp >= 25 && city.humidity >= 60).length, // 각 환경애 있는 도시수와 총 도시수를 통계로 제공
+// }))
+// 기존 데이터 임포트 방식
+
+import { useWeatherStore } from '@/stores/weatherStore'; // Store 사용으로 변경
+
+const weatherStore = useWeatherStore()
+
 </script>
 
 <template>
@@ -18,16 +24,16 @@ const stats = computed(() => ({
 
       <div class="stats-grid">
         <article>
-          <span>전체 도시</span><strong>{{ stats.total }}</strong>
+          <span>전체 도시</span><strong>{{ weatherStore.stats.total }}</strong>
         </article>
         <article>
-          <span>더운 도시</span><strong>{{ stats.hot }}</strong>
+          <span>더운 도시</span><strong>{{ weatherStore.stats.hot }}</strong>
         </article>
         <article>
-          <span>선선한 도시</span><strong>{{ stats.cool }}</strong>
+          <span>선선한 도시</span><strong>{{ weatherStore.stats.cool }}</strong>
         </article>
         <article>
-          <span>습하고 더운 도시</span><strong>{{ stats.humidHot }}</strong>
+          <span>습하고 더운 도시</span><strong>{{ weatherStore.stats.humidhot }}</strong>
         </article>
       </div>
 

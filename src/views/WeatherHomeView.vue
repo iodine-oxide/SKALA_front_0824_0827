@@ -2,14 +2,18 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
+import AddCityForm from '@/components/exercise/AddCityForm.vue'
 import BaseDashboardCard from '@/components/exercise/BaseDashboardCard.vue'
 import SearchBar from '@/components/exercise/SearchBar.vue'
 import WeatherCard from '@/components/exercise/WeatherCard.vue'
+import WeatherRefreshControl from '@/components/exercise/WeatherRefreshControl.vue'
 import WeatherStatusBar from '@/components/exercise/WeatherStatusBar.vue'
+import { useLocationStore } from '@/stores/locationStore'
 import { useWeatherStore } from '@/stores/weatherStore'
 // import { weatherData } from '@/data/weatherData' 기존 데이터 임포트 방식
 
 const router = useRouter()
+const locationStore = useLocationStore()
 const weatherStore = useWeatherStore()
 // const weatherList = ref([...weatherData]) 기존 데이터 임포트 방식
 
@@ -19,18 +23,18 @@ const temperatureFilter = ref('all')
 
 const filteredWeatherList = computed(() => {
   const keyword = searchCity.value.trim()
-  let result = weatherStore.wheatherList
+  let result = weatherStore.weatherList
 
   if (keyword) {
-    result = result.filter((city) => city.name.includes(keyword))
+    result = result.filter((city) => city.name.includes(keyword) || city.fullName?.includes(keyword))
   }
 
   if (temperatureFilter.value === 'hot') {
-    result = result.filter((city) => city.temp >= 25)
+    result = result.filter((city) => Number.isFinite(city.temp) && city.temp >= 25)
   } else if (temperatureFilter.value === 'cool') {
-    result = result.filter((city) => city.temp < 25)
+    result = result.filter((city) => Number.isFinite(city.temp) && city.temp < 25)
   } else if (temperatureFilter.value === 'humidHot') {
-    result = result.filter((city) => city.temp >= 25 && city.humidity >= 60)
+    result = result.filter((city) => Number.isFinite(city.temp) && city.temp >= 25 && city.humidity >= 60)
   }
 
   return result
@@ -56,6 +60,16 @@ const showDetail = (city) => {
   router.push(`/weather/${city.id}`)
 }
 
+const searchLocation = (query) => {
+  locationStore.searchLocations(query)
+}
+
+const addLocation = (location) => {
+  const result = weatherStore.addLocation(location)
+  if (result.added) selectedCity.value = result.city
+  locationStore.showAddResult(result.message, !result.added)
+}
+
 watch(selectedCity, (newCity, oldCity) => {
   console.log('선택 도시가 변경되었습니다.')
   console.log('이전 도시:', oldCity?.name ?? '없음')
@@ -79,6 +93,14 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
       </BaseDashboardCard>
 
       <BaseDashboardCard title="🏙️ 지역별 날씨 현황">
+        <WeatherRefreshControl
+          :is-refreshing="weatherStore.isRefreshing"
+          :last-updated="weatherStore.lastUpdated"
+          :message="weatherStore.refreshMessage"
+          :error="weatherStore.refreshError"
+          @refresh="weatherStore.refreshWeatherList"
+        />
+
         <template v-if="filteredWeatherList.length > 0">
           <WeatherCard v-for="city in filteredWeatherList" :key="city.id" :city="city" @select-card="selectCity" @click-detail="showDetail" />
         </template>
@@ -89,6 +111,16 @@ watch(temperatureFilter, (newFilter, oldFilter) => {
           </p>
         </div>
       </BaseDashboardCard>
+
+      <AddCityForm
+        :candidates="locationStore.candidates"
+        :is-searching="locationStore.isSearching"
+        :message="locationStore.searchMessage"
+        :error="locationStore.searchError"
+        @search-city="searchLocation"
+        @select-location="addLocation"
+        @clear-results="locationStore.clearResults"
+      />
 
       <WeatherStatusBar :selected-city="selectedCity" :search-city="searchCity" :result-count="visibleCityCount" />
     </section>

@@ -8,6 +8,11 @@ export const useConfigStore = defineStore('config', {
   getters: {
     unitSymbol: (state) => (state.unit === 'fahrenheit' ? '°F' : '°C'),
     unitLabel: (state) => (state.unit === 'fahrenheit' ? '화씨' : '섭씨'),
+    convertTemperature: (state) => (temperature) => {
+      if (!Number.isFinite(temperature)) return null
+
+      return state.unit === 'fahrenheit' ? Math.round((temperature * 9) / 5 + 32) : temperature
+    },
   },
 
   actions: {

@@ -14,14 +14,22 @@
 - 라우터를 적용 index.js를 통하여 기본 주소(localhost:----/)에는 home으로 라우팅, 이후 네비게이션, 상세보기 클릭에 따라 각 뷰로 라우팅
 - 네비게이션 바와 제목이 합쳐진 블럭을 하나의 컴포넌트로 분리하여 App.vue에서 사용 라우팅 페이지 위에서 고정됨
 
-### 0827
+### 0827(Store hands on)
 - Pinia Store를 통해 화씨 - 섭씨 변환 기능을 추가
 - 이전 weatherData를 여러 뷰에서 직접 임포트하여 사용하던 부분을 Store를 이용해서 관리하도록 변경 
 - 날씨 통계(해당 날씨에 속하는 도시 수), Id로 도시 조회, 도시 목록을 Store 내에서 처리 후 각 뷰에서 사용
 
+### 0827(API 추가)
+- OpenWeather API에 추가적으로 통계지리정보시스템 SGIS API를 활용
+- 이전 실습에 존재하던 도시들의 경우 기본값으로 보존
+- SGIS API를 통해 사용자가 지역을 입력하면, API를 통해 해당 지역의 경도와 위도를 반환
+- 경도와 위도 반환이 이루어지면 해당 지역을 새롭게 추가 날씨 상태는 ```미조회```로 표시
+- ```전체 날씨 새로고침```버튼 클릭시 OpenWeather API를 통해 실제 조회 날씨로 업데이트
+- API 상의 체감온도를 표시 정보에 추가
+
 ## 발생 에러 및 해결 과정
 
-### showDetail을 아래와 같이 온도와 습도를 추가적으로 보여주도록 수정시 사진처럼 undefined로 표시되는 문제(0825)
+### showDetail을 온도와 습도를 추가적으로 보여주도록 수정시 사진처럼 undefined로 표시되는 문제(0825)
 
 ```js
 const showDetail = (cityName, status, temp, humidity) => {
@@ -29,7 +37,7 @@ const showDetail = (cityName, status, temp, humidity) => {
 }
 ```
 
-![alt text](image.png)
+![showDetail 사진](image.png)
 
 문제 발생 원인: 버튼 클릭에서 @click.stop에서 전달되는 인자를 맞춰서 수정하지 않았었음
 
@@ -77,7 +85,7 @@ const showDetail = (city) => {
 
 ### WeatherStore 적용 이후 데이터 출력 오류(0827)
 
-![alt text](image-1.png)
+![도시 검색 사진](image-1.png)
 
 WeatherStore 적용을 위해 코드 수정 이후 홈 화면애서 날씨가 조회되지 않는 문제 확인
 
@@ -95,4 +103,60 @@ const filteredWeatherList = computed(() => {
 const filteredWeatherList = computed(() => {
   const keyword = searchCity.value.trim()
   let result = weatherStore.wheatherList
+```
+
+### 상세보기 체감온도 적용 이후 단위변경 출력 오류
+
+![체감온도 적용 사진](image-2.png)
+
+발생 문제 원인: 체감온도 적용 이후 단위변환을 적용하지 않아 변환 및 단위 표시가 되지 않음
+문제 해결 방안: 변환에 체감온도를 추가, 단위는 기존 단위 변수 부착, 체감온도는 기존 온도와는 분리하여 별도로 사용되도록 조치
+추가 적용: 이후 홈 화면에도 체감온도 적용
+추가 적용: 홈화면에서 작성 과정에서 코드의 중복을 줄이고자 두부분에서 사용되는 변환을 configStore로 이관
+
+```html
+<!--수정 전-->
+<article>
+  <span>현재 체감온도</span>
+  <strong>{{ city.feelsLike }}</strong>
+</article>
+
+<!--수정 후(config Store로 통합하여 개선)-->
+<article>
+  <span>현재 체감온도</span>
+  <strong>{{ displayFeelsLikeTemp }}{{ configStore.unitSymbol }}</strong>
+</article>
+```
+
+```js
+// 추가된 코드 -> config Store로 통합하여 개선
+const hasFeelsLikeWeather = computed(() => Number.isFinite(city.value?.feelsLike))
+const displayFeelsLikeTemp = computed(() => {
+  if (!hasFeelsLikeWeather.value) return null
+
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((city.value.feelsLike * 9) / 5 + 32)
+  }
+
+  return city.value.feelsLike
+})
+```
+configStore.js 수정 코드
+
+```js
+//configStore
+  getters: {
+    unitSymbol: (state) => (state.unit === 'fahrenheit' ? '°F' : '°C'),
+    unitLabel: (state) => (state.unit === 'fahrenheit' ? '화씨' : '섭씨'),
+    convertTemperature: (state) => (temperature) => {
+      if (!Number.isFinite(temperature)) return null
+
+      return state.unit === 'fahrenheit' ? Math.round((temperature * 9) / 5 + 32) : temperature
+    },
+  },
+
+//vue에서 사용
+import { useConfigStore } from '@/stores/configStore'
+const displayTemp = computed(() => configStore.convertTemperature(city.value?.temp))
+const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(city.value?.feelsLike))
 ```

@@ -11,10 +11,9 @@
 // }))
 // 기존 데이터 임포트 방식
 
-import { useWeatherStore } from '@/stores/weatherStore'; // Store 사용으로 변경
+import { useWeatherStore } from '@/stores/weatherStore' // Store 사용으로 변경
 
 const weatherStore = useWeatherStore()
-
 </script>
 
 <template>
@@ -33,7 +32,7 @@ const weatherStore = useWeatherStore()
           <span>선선한 도시</span><strong>{{ weatherStore.stats.cool }}</strong>
         </article>
         <article>
-          <span>습하고 더운 도시</span><strong>{{ weatherStore.stats.humidhot }}</strong>
+          <span>습하고 더운 도시</span><strong>{{ weatherStore.stats.humidHot }}</strong>
         </article>
       </div>
 

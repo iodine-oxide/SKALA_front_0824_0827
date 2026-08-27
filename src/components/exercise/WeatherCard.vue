@@ -13,28 +13,33 @@ const props = defineProps({
 
 const emit = defineEmits(['select-card', 'click-detail'])
 const configStore = useConfigStore()
-
-const displayTemp = computed(() => {
-  const rawTemp = props.city.temp
-
-  if (configStore.unit === 'fahrenheit') {
-    return Math.round((rawTemp * 9) / 5 + 32)
-  }
-
-  return rawTemp
-})
+const hasWeather = computed(() => Number.isFinite(props.city.temp) && Number.isFinite(props.city.humidity))
+const displayTemp = computed(() => configStore.convertTemperature(props.city.temp))
+const displayFeelsLikeTemp = computed(() => configStore.convertTemperature(props.city.feelsLike))
 </script>
 
 <template>
-  <article class="weather-card" tabindex="0" @click="emit('select-card', city)" @keydown.enter="emit('select-card', city)" @keydown.space.prevent="emit('select-card', city)">
+  <article class="weather-card" tabindex="0" @click="emit('select-card', city)" @keydown.enter.self="emit('select-card', city)" @keydown.space.self.prevent="emit('select-card', city)">
     <div class="weather-info">
       <h3>{{ city.name }} ({{ city.status }})</h3>
-      <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
-      <p>현재 습도: {{ city.humidity }}%</p>
+      <small v-if="city.fullName && city.fullName !== city.name" class="location-name">{{ city.fullName }}</small>
 
-      <span v-if="city.temp >= 25 && city.humidity >= 60" class="temperature-label humidhot">🫠 습하고 더움(25도 이상 습도 60 이상)</span>
-      <span v-else-if="city.temp >= 25" class="temperature-label hot">🔥 더움 (25도 이상)</span>
-      <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+      <template v-if="hasWeather">
+        <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
+        <p>
+          체감 온도:
+          <template v-if="displayFeelsLikeTemp !== null">{{ displayFeelsLikeTemp }}{{ configStore.unitSymbol }}</template>
+          <template v-else>미조회</template>
+        </p>
+        <p>현재 습도: {{ city.humidity }}%</p>
+
+        <span v-if="city.temp >= 25 && city.humidity >= 60" class="temperature-label humidhot">🫠 습하고 더움(25도 이상 습도 60 이상)</span>
+        <span v-else-if="city.temp >= 25" class="temperature-label hot">🔥 더움 (25도 이상)</span>
+        <span v-else class="temperature-label cool">❄️ 선선함 (25도 미만)</span>
+      </template>
+
+      <p v-else class="not-loaded">날씨 정보가 없습니다. 전체 날씨 새로고침을 눌러 주세요.</p>
+      <p v-if="city.weatherError" class="weather-error">{{ city.weatherError }}</p>
     </div>
 
     <button type="button" class="detail-button" @click.stop="emit('click-detail', city)">상세보기</button>
@@ -72,10 +77,32 @@ const displayTemp = computed(() => {
   font-size: 15px;
 }
 
+.location-name {
+  display: block;
+  margin: -2px 0 8px;
+  color: #7b8a98;
+  font-size: 12px;
+}
+
 .weather-info p {
   margin: 0 0 8px;
   color: #536677;
   font-size: 14px;
+}
+
+.weather-info .not-loaded {
+  max-width: 390px;
+  margin-top: 10px;
+  color: #687b8c;
+  line-height: 1.5;
+}
+
+.weather-info .weather-error {
+  max-width: 390px;
+  margin-top: 8px;
+  color: #c43d42;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .temperature-label {

@@ -9,6 +9,8 @@
         <li>도시 이름 검색</li>
         <li>기온과 습도 조건별 필터</li>
         <li>도시별 상세 설명</li>
+        <li>SGIS 지역 검색을 통한 도시 추가</li>
+        <li>OpenWeather 현재 날씨 수동 갱신</li>
       </ul>
 
       <RouterLink to="/">← 메인 대시보드로 돌아가기</RouterLink>

@@ -6,7 +6,7 @@ import UnitToggler from '@/components/exercise/UnitToggler.vue'
   <header class="site-header">
     <div class="header-inner">
       <div class="app-heading">
-        <h1>🌤️ 종합실습 5: 날씨 (Store 적용)</h1>
+        <h1>🌤️ 종합실습 6: 날씨 (API 활용)</h1>
       </div>
 
       <nav class="navigation" aria-label="주요 메뉴">

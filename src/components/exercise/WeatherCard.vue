@@ -1,6 +1,10 @@
 <script setup>
+import { computed } from 'vue'
+
+import { useConfigStore } from '@/stores/configStore'
+
 // 각 도시별 정보 카드(블럭)용 컴포넌트
-defineProps({
+const props = defineProps({
   city: {
     type: Object,
     required: true,
@@ -8,13 +12,24 @@ defineProps({
 })
 
 const emit = defineEmits(['select-card', 'click-detail'])
+const configStore = useConfigStore()
+
+const displayTemp = computed(() => {
+  const rawTemp = props.city.temp
+
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((rawTemp * 9) / 5 + 32)
+  }
+
+  return rawTemp
+})
 </script>
 
 <template>
   <article class="weather-card" tabindex="0" @click="emit('select-card', city)" @keydown.enter="emit('select-card', city)" @keydown.space.prevent="emit('select-card', city)">
     <div class="weather-info">
       <h3>{{ city.name }} ({{ city.status }})</h3>
-      <p>현재 기온: {{ city.temp }}°C</p>
+      <p>현재 기온: {{ displayTemp }}{{ configStore.unitSymbol }}</p>
       <p>현재 습도: {{ city.humidity }}%</p>
 
       <span v-if="city.temp >= 25 && city.humidity >= 60" class="temperature-label humidhot">🫠 습하고 더움(25도 이상 습도 60 이상)</span>

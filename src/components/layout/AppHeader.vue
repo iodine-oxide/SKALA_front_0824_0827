@@ -1,14 +1,21 @@
+<script setup>
+import UnitToggler from '@/components/exercise/UnitToggler.vue'
+</script>
+
 <template>
   <header class="site-header">
     <div class="header-inner">
       <div class="app-heading">
-        <h1>🌤️ 과제 1, 2, 3, 4: 날씨 (Router)</h1> <!--제목-->
+        <h1>🌤️ 종합실습 5: 날씨 (Store 적용)</h1>
       </div>
 
-      <nav class="navigation" aria-label="주요 메뉴"> <!--네비게이션 바-->
-        <RouterLink to="/">날씨 홈</RouterLink><!--홈 뷰로 라우팅-->
-        <RouterLink to="/stats">날씨 통계</RouterLink><!--통계 뷰로 라우팅-->
-        <RouterLink to="/about">서비스 소개</RouterLink><!--서비스 소개로 라우팅-->
+      <nav class="navigation" aria-label="주요 메뉴">
+        <div class="nav-links">
+          <RouterLink to="/">날씨 홈</RouterLink>
+          <RouterLink to="/stats">날씨 통계</RouterLink>
+          <RouterLink to="/about">서비스 소개</RouterLink>
+        </div>
+        <UnitToggler />
       </nav>
     </div>
   </header>
@@ -45,21 +52,28 @@
   margin-top: 18px;
   padding: 10px;
   display: flex;
-  justify-content: center;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   border: 1px solid #dfe5ea;
   border-radius: 9px;
   background: #f7f9fa;
 }
 
-.navigation a {
-  min-width: 92px;
-  padding: 10px 14px;
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-links a {
+  min-width: 82px;
+  padding: 10px 12px;
   border-radius: 7px;
   color: #536677;
   text-align: center;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   transition:
     color 0.15s ease,
@@ -67,17 +81,17 @@
     box-shadow 0.15s ease;
 }
 
-.navigation a:hover {
+.nav-links a:hover {
   background: #eef4f7;
 }
 
-.navigation a.router-link-exact-active {
+.nav-links a.router-link-exact-active {
   color: #fff;
   background: #3b82f6;
   box-shadow: 0 4px 10px rgba(59, 130, 246, 0.22);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 680px) {
   .site-header {
     padding: 18px 12px 0;
   }
@@ -94,7 +108,15 @@
     font-size: 20px;
   }
 
-  .navigation a {
+  .navigation {
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    width: 100%;
+  }
+
+  .nav-links a {
     min-width: 0;
     flex: 1;
     padding: 9px 7px;

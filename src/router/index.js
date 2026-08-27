@@ -9,7 +9,7 @@ const router = createRouter({
       component: () => import('@/views/WeatherHomeView.vue'),
     },
     {
-      path: '/weather/:cityId',// 도시 id에 따라 각각의 페이지로 라우팅
+      path: '/weather/:cityId', // 도시 id에 따라 각각의 페이지로 라우팅
       name: 'weather-detail',
       component: () => import('@/views/WeatherDetailView.vue'),
     },

@@ -4,7 +4,8 @@ import AppHeader from '@/components/layout/AppHeader.vue' // 내비게이션 바
 
 <template>
   <div class="app-shell">
-    <AppHeader /> <!--상단 고정용 제목, 네비게이션 바-->
+    <AppHeader />
+    <!--상단 고정용 제목, 네비게이션 바-->
     <RouterView />
   </div>
 </template>

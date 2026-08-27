@@ -3,9 +3,11 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { findWeatherById } from '@/data/weatherData'
+import { useConfigStore } from '@/stores/configStore'
 
 const route = useRoute()
 const city = ref(null)
+const configStore = useConfigStore()
 
 const loadCity = () => {
   city.value = findWeatherById(route.params.cityId) ?? null
@@ -16,6 +18,16 @@ const temperatureMessage = computed(() => {
   if (city.value.temp >= 25 && city.value.humidity >= 60) return '🫠 습하고 더운 날씨입니다.'
   if (city.value.temp >= 25) return '🔥 더운 날씨입니다.'
   return '❄️ 선선한 날씨입니다.'
+})
+
+const displayTemp = computed(() => {
+  if (!city.value) return ''
+
+  if (configStore.unit === 'fahrenheit') {
+    return Math.round((city.value.temp * 9) / 5 + 32)
+  }
+
+  return city.value.temp
 })
 
 onMounted(loadCity)
@@ -32,7 +44,7 @@ watch(() => route.params.cityId, loadCity)
         <div class="detail-grid">
           <article>
             <span>현재 기온</span>
-            <strong>{{ city.temp }}°C</strong>
+            <strong>{{ displayTemp }}{{ configStore.unitSymbol }}</strong>
           </article>
           <article>
             <span>현재 습도</span>
